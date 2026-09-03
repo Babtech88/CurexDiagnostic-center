@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Remove Equipment{% endblock %}
+{% block content %}
+<h3>Remove {{ item.name }}?</h3>
+<div class="card border-0 shadow-sm p-4" style="max-width:500px;">
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, remove</button>
+    <a href="{% url 'equipment:equipment_list' %}" class="btn btn-outline-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+MERGE NOTES
+===========
+This package uses the previous Curex project as the base and overlays the Curex Sales Stage 3
+application files on top while preserving the previous project's db.sqlite3 and existing .env.
+
+Product image paths in the preserved database remain intact. The product category image files are
+included under media/products/category_images/ so existing catalog image references can resolve.
+
+No seed_demo_data command was run and no customer, sales, inventory, price, category, or WhatsApp
+data in db.sqlite3 was replaced.

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Test Results{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h3 class="mb-0"><i class="bi bi-file-earmark-medical"></i> Test Results</h3>
+  <a href="{% url 'results:result_upload' %}" class="btn btn-success btn-sm"><i class="bi bi-upload"></i> Upload Result</a>
+</div>
+<form method="get" class="mb-3">
+  <input type="text" name="q" value="{{ query }}" class="form-control" style="max-width:300px" placeholder="Search by patient name">
+</form>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Patient</th><th>Test</th><th>Uploaded</th><th>Released</th><th>Notified</th><th>Code</th><th></th></tr></thead>
+      <tbody>
+      {% for r in results %}
+        <tr>
+          <td><a href="{% url 'results:result_detail' r.pk %}">{{ r.customer.name }}</a></td>
+          <td>{{ r.product.name|default:"—" }}</td>
+          <td class="small text-muted">{{ r.uploaded_at|naturaltime }}</td>
+          <td>{% if r.is_released %}<span class="badge badge-soft-success">Yes</span>{% else %}<span class="badge badge-soft-warning">Hidden</span>{% endif %}</td>
+          <td>{% if r.patient_notified_at %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}<span class="text-muted">—</span>{% endif %}</td>
+          <td><code>{{ r.access_code }}</code></td>
+          <td class="text-end"><a href="{% url 'results:result_detail' r.pk %}" class="btn btn-sm btn-outline-secondary">View</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No results uploaded yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

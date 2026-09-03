@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h3 class="mb-3">{{ title }}</h3>
+<div class="card border-0 shadow-sm p-4" style="max-width:700px;">
+  <form method="post">
+    {% csrf_token %}
+    {% include "_form_fields.html" %}
+    <button type="submit" class="btn btn-success">Save Promotion</button>
+    <a href="{% url 'inventory:promotion_list' %}" class="btn btn-outline-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

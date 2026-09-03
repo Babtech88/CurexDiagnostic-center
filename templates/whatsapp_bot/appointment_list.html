@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Appointments{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h3 class="mb-0"><i class="bi bi-calendar-check"></i> WhatsApp Appointment Requests</h3>
+  <form method="get">
+    <select name="status" class="form-select" onchange="this.form.submit()">
+      <option value="">All statuses</option>
+      <option value="pending" {% if status == "pending" %}selected{% endif %}>Pending</option>
+      <option value="confirmed" {% if status == "confirmed" %}selected{% endif %}>Confirmed</option>
+      <option value="completed" {% if status == "completed" %}selected{% endif %}>Completed</option>
+      <option value="cancelled" {% if status == "cancelled" %}selected{% endif %}>Cancelled</option>
+    </select>
+  </form>
+</div>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Patient</th><th>Phone</th><th>Test</th><th>Preferred Date/Time</th><th>Status</th><th>Requested</th><th></th></tr></thead>
+      <tbody>
+      {% for a in appointments %}
+        <tr>
+          <td><a href="{% url 'whatsapp_bot:conversation_detail' a.contact.pk %}">{{ a.contact.profile_name|default:"Unknown" }}</a></td>
+          <td>{{ a.contact.wa_id }}</td>
+          <td>{{ a.product.name|default:"Unspecified" }}</td>
+          <td>{{ a.preferred_date_text }}</td>
+          <td><span class="badge text-bg-secondary">{{ a.get_status_display }}</span></td>
+          <td class="small text-muted">{{ a.created_at|naturaltime }}</td>
+          <td class="text-end">
+            {% if a.status == "pending" %}
+              <a href="{% url 'whatsapp_bot:appointment_set_status' a.pk 'confirmed' %}" class="btn btn-sm btn-outline-success">Confirm</a>
+              <a href="{% url 'whatsapp_bot:appointment_set_status' a.pk 'cancelled' %}" class="btn btn-sm btn-outline-danger">Cancel</a>
+            {% elif a.status == "confirmed" %}
+              <a href="{% url 'whatsapp_bot:appointment_set_status' a.pk 'completed' %}" class="btn btn-sm btn-outline-primary">Mark Completed</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No appointment requests yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

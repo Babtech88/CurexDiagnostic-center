@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}New Booking{% endblock %}
+{% block content %}
+<h3 class="mb-3">Record New Booking</h3>
+<form method="post">
+  {% csrf_token %}
+  <div class="row g-3">
+    <div class="col-md-8">
+      <div class="card border-0 shadow-sm p-3 mb-2">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-6">
+            <input type="text" id="posSearch" class="form-control" placeholder="Search tests by name...">
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex flex-wrap gap-1">
+              <button type="button" class="btn btn-sm btn-dark cat-filter-btn active" data-cat="all">All</button>
+              {% for c in categories %}
+                <button type="button" class="btn btn-sm btn-outline-secondary cat-filter-btn" data-cat="cat-{{ c.pk }}">{{ c.name }}</button>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card border-0 shadow-sm">
+        <div class="table-responsive" style="max-height:65vh; overflow-y:auto;">
+          <table class="table align-middle mb-0" id="posTable">
+            <thead class="sticky-top bg-white"><tr><th>Product</th><th>Category</th><th>Price</th><th>In Stock</th><th style="width:120px;">Quantity</th></tr></thead>
+            <tbody>
+            {% regroup products by category as category_list %}
+            {% for group in category_list %}
+              <tr class="table-light cat-group-header" data-cat="cat-{{ group.grouper.pk }}">
+                <td colspan="5" class="fw-bold small text-uppercase text-muted">{{ group.grouper.name|default:"Uncategorized" }}</td>
+              </tr>
+              {% for p in group.list %}
+                <tr class="product-row" data-cat="cat-{{ group.grouper.pk }}" data-name="{{ p.name|lower }}">
+                  <td>
+                    {{ p.name }}
+                    {% if p.active_promotion %}<span class="badge badge-soft-success ms-1">On Sale</span>{% endif %}
+                  </td>
+                  <td class="small text-muted">{{ group.grouper.name }}</td>
+                  <td>₦{{ p.current_price|intcomma }}
+                    {% if p.active_promotion %}<span class="price-old ms-1">₦{{ p.selling_price|intcomma }}</span>{% endif %}
+                  </td>
+                  <td>{{ p.stock_quantity }}</td>
+                  <td><input type="number" name="qty_{{ p.id }}" class="form-control form-control-sm" min="0" max="{{ p.stock_quantity }}" value="0"></td>
+                </tr>
+              {% endfor %}
+            {% empty %}
+              <tr><td colspan="5" class="text-center text-muted py-4">No products in stock right now.</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-3">
+        <strong class="mb-2">Booking Details</strong>
+        {% include "_form_fields.html" %}
+        <button type="submit" class="btn btn-success">Complete Booking</button>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  (function () {
+    var searchInput = document.getElementById("posSearch");
+    var filterBtns = document.querySelectorAll(".cat-filter-btn");
+    var rows = document.querySelectorAll("#posTable .product-row");
+    var headers = document.querySelectorAll("#posTable .cat-group-header");
+    var activeCat = "all";
+
+    function applyFilters() {
+      var term = (searchInput.value || "").toLowerCase().trim();
+      var visibleCats = {};
+      rows.forEach(function (row) {
+        var matchesCat = activeCat === "all" || row.dataset.cat === activeCat;
+        var matchesSearch = !term || row.dataset.name.indexOf(term) !== -1;
+        var show = matchesCat && matchesSearch;
+        row.style.display = show ? "" : "none";
+        if (show) visibleCats[row.dataset.cat] = true;
+      });
+      headers.forEach(function (h) {
+        h.style.display = visibleCats[h.dataset.cat] ? "" : "none";
+      });
+    }
+
+    searchInput.addEventListener("input", applyFilters);
+    filterBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        filterBtns.forEach(function (b) { b.classList.remove("active", "btn-dark"); b.classList.add("btn-outline-secondary"); });
+        btn.classList.add("active", "btn-dark");
+        btn.classList.remove("btn-outline-secondary");
+        activeCat = btn.dataset.cat;
+        applyFilters();
+      });
+    });
+  })();
+</script>
+{% endblock %}

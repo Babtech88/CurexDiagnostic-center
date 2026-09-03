@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h3 class="mb-4">Welcome back, {{ request.user.first_name|default:request.user.username }} 👋</h3>
+
+{% if is_sales_agent %}
+<div class="alert alert-light border d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+  <div><strong>Sales Agent Workspace</strong><div class="small text-muted">Your dashboard shows only your sales and assigned WhatsApp conversations.</div></div>
+  <a class="btn btn-sm btn-success" href="{% url 'whatsapp_bot:conversation_list' %}"><i class="bi bi-whatsapp"></i> Open My Chats</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3"><div class="card card-kpi p-3"><div class="text-muted small">My Sales Today</div><div class="fs-4 fw-bold">{{ todays_sale_count }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card card-kpi p-3"><div class="text-muted small">My Revenue Today</div><div class="fs-4 fw-bold">₦{{ todays_revenue|floatformat:2|intcomma }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card card-kpi p-3"><div class="text-muted small">My Assigned Chats</div><div class="fs-4 fw-bold">{{ assigned_chat_count }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card card-kpi p-3"><div class="text-muted small">Chats Needing Me</div><div class="fs-4 fw-bold">{{ needs_human_count }}</div></div></div>
+</div>
+{% endif %}
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="card card-kpi p-3">
+      <div class="text-muted small">Today's Revenue</div>
+      <div class="fs-4 fw-bold">₦{{ todays_revenue|floatformat:2|intcomma }}</div>
+      <div class="text-muted small">{{ todays_sale_count }} sale{{ todays_sale_count|pluralize }} today</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card card-kpi p-3">
+      <div class="text-muted small">Last 7 Days</div>
+      <div class="fs-4 fw-bold">₦{{ week_revenue|floatformat:2|intcomma }}</div>
+      <div class="text-muted small">Total revenue</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card card-kpi p-3">
+      <div class="text-muted small">Pending WhatsApp Bookings</div>
+      <div class="fs-4 fw-bold">{{ pending_whatsapp_orders }}</div>
+      <a href="{% url 'orders:whatsapp_order_list' %}" class="small">View orders &rarr;</a>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card card-kpi p-3">
+      <div class="text-muted small">Pending Sample Collections</div>
+      <div class="fs-4 fw-bold">{{ pending_deliveries }}</div>
+      <a href="{% url 'orders:delivery_list' %}" class="small">View deliveries &rarr;</a>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="card card-kpi p-3">
+      <div class="text-muted small"><i class="bi bi-calendar-check"></i> Pending Bot Appointments</div>
+      <div class="fs-4 fw-bold">{{ pending_appointments }}</div>
+      <a href="{% url 'whatsapp_bot:appointment_list' %}" class="small">Review &rarr;</a>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card card-kpi p-3">
+      <div class="text-muted small"><i class="bi bi-robot"></i> Chats Needing a Human</div>
+      <div class="fs-4 fw-bold">{{ needs_human_count }}</div>
+      <a href="{% url 'whatsapp_bot:conversation_list' %}?needs_human=1" class="small">Respond &rarr;</a>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card card-kpi p-3 border-start border-4 border-danger">
+      <div class="d-flex justify-content-between">
+        <div>
+          <div class="text-muted small">Low Stock Items</div>
+          <div class="fs-4 fw-bold">{{ low_stock_count }}</div>
+        </div>
+        <i class="bi bi-box-seam fs-1 text-danger opacity-25"></i>
+      </div>
+      <a href="{% url 'inventory:alerts' %}" class="small">Restock now &rarr;</a>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-kpi p-3 border-start border-4 border-warning">
+      <div class="d-flex justify-content-between">
+        <div>
+          <div class="text-muted small">Expiring Soon (30 days)</div>
+          <div class="fs-4 fw-bold">{{ expiring_count }}</div>
+        </div>
+        <i class="bi bi-hourglass-split fs-1 text-warning opacity-25"></i>
+      </div>
+      <a href="{% url 'inventory:alerts' %}" class="small">Review &rarr;</a>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-kpi p-3 border-start border-4 border-dark">
+      <div class="d-flex justify-content-between">
+        <div>
+          <div class="text-muted small">Already Expired</div>
+          <div class="fs-4 fw-bold">{{ expired_count }}</div>
+        </div>
+        <i class="bi bi-exclamation-octagon fs-1 opacity-25"></i>
+      </div>
+      <a href="{% url 'inventory:alerts' %}" class="small">Remove from shelf &rarr;</a>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <strong>Recent Bookings</strong>
+        <a href="{% url 'sales:sale_list' %}" class="small">See all</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead><tr><th>#</th><th>Attendant</th><th>Patient</th><th>Total</th><th>Time</th></tr></thead>
+          <tbody>
+          {% for sale in recent_sales %}
+            <tr>
+              <td><a href="{% url 'sales:sale_detail' sale.pk %}">#{{ sale.pk }}</a></td>
+              <td>{{ sale.cashier.username|default:"—" }}</td>
+              <td>{{ sale.customer.name|default:"Walk-in Patient" }}</td>
+              <td>₦{{ sale.total_amount|floatformat:2|intcomma }}</td>
+              <td class="text-muted small">{{ sale.created_at|naturaltime }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No bookings yet — record your first sale!</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-header bg-white"><strong>⚠️ Needs Restocking</strong></div>
+      <ul class="list-group list-group-flush">
+        {% for p in low_stock_products %}
+          <li class="list-group-item d-flex justify-content-between">
+            <a href="{% url 'inventory:product_detail' p.pk %}">{{ p.name }}</a>
+            <span class="badge badge-soft-danger">{{ p.stock_quantity }} left</span>
+          </li>
+        {% empty %}
+          <li class="list-group-item text-muted">All stock levels look healthy 🎉</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>⏳ Expiry Watchlist</strong></div>
+      <ul class="list-group list-group-flush">
+        {% for p in expiring_products %}
+          <li class="list-group-item d-flex justify-content-between">
+            <a href="{% url 'inventory:product_detail' p.pk %}">{{ p.name }}</a>
+            {% if p.is_expired %}
+              <span class="badge badge-soft-danger">Expired</span>
+            {% else %}
+              <span class="badge badge-soft-warning">{{ p.days_to_expiry }}d left</span>
+            {% endif %}
+          </li>
+        {% empty %}
+          <li class="list-group-item text-muted">Nothing expiring soon 🎉</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

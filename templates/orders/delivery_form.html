@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Update Delivery{% endblock %}
+{% block content %}
+<h3 class="mb-3">Delivery for {{ delivery.recipient_name }}</h3>
+<p class="text-muted">{{ delivery.address }}</p>
+<div class="card border-0 shadow-sm p-4" style="max-width:600px;">
+  <form method="post">
+    {% csrf_token %}
+    {% include "_form_fields.html" %}
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="{% url 'orders:delivery_list' %}" class="btn btn-outline-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

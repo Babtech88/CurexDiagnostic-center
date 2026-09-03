@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Suppliers{% endblock %}
+{% block content %}
+<h3 class="mb-3">Suppliers</h3>
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="card border-0 shadow-sm">
+      <ul class="list-group list-group-flush">
+        {% for s in suppliers %}
+          <li class="list-group-item d-flex justify-content-between">
+            <div><strong>{{ s.name }}</strong><div class="small text-muted">{{ s.phone_number }} · {{ s.email }}</div></div>
+            <form method="post" action="{% url 'inventory:supplier_delete' s.pk %}" onsubmit="return confirm('Delete this supplier?');">
+              {% csrf_token %}<button class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+          </li>
+        {% empty %}<li class="list-group-item text-muted">No suppliers yet.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card border-0 shadow-sm p-3">
+      <strong class="mb-2">Add Supplier</strong>
+      <form method="post">
+        {% csrf_token %}
+        {% include "_form_fields.html" %}
+        <button class="btn btn-success">Add</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base_public.html" %}
+{% load humanize %}
+{% block title %}Shop<style>
+.product-image-wrap{overflow:hidden;border-radius:1rem 1rem 0 0;background:#eef5f3}
+.product-test-image{width:100%;height:210px;object-fit:cover;display:block;transition:transform .35s ease}
+.product-card:hover .product-test-image{transform:scale(1.025)}
+.product-card .card-title{font-weight:700;line-height:1.35;min-height:2.7em}
+@media (max-width:576px){.product-test-image{height:165px}}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container py-5">
+<div class="text-center mb-4" data-aos="fade-up">
+  <span class="section-eyebrow">Our Catalog</span>
+  <h2 class="section-title">Shop All Tests &amp; Services</h2>
+</div>
+<form method="get" class="row g-2 mb-4 justify-content-center" data-aos="fade-up">
+  <div class="col-auto"><input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search products..."></div>
+  <div class="col-auto">
+    <select name="category" class="form-select">
+      <option value="">All categories</option>
+      {% for c in categories %}<option value="{{ c.pk }}" {% if category_id == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-auto"><button class="btn btn-primary-brand">Search</button></div>
+</form>
+
+<div class="row g-3">
+  {% for p in products %}
+    <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:0 }}0">
+      <div class="card product-card h-100 shadow-sm border-0">
+        {% if p.image %}
+          <div class="product-image-wrap">
+            <img src="{{ p.image.url }}" class="card-img-top product-test-image" loading="lazy" alt="{{ p.name }} diagnostic test">
+          </div>
+        {% endif %}
+        <div class="card-body">
+          <h6 class="card-title">{{ p.name }}</h6>
+          <div>
+            <span class="price-new">₦{{ p.current_price|intcomma }}</span>
+            {% if p.active_promotion %}<span class="price-old ms-1">₦{{ p.selling_price|intcomma }}</span>{% endif %}
+          </div>
+          {% if p.is_out_of_stock %}<span class="badge badge-soft-danger">Out of stock</span>{% endif %}
+          <a href="{% url 'storefront:product_detail' p.pk %}" class="btn btn-sm btn-primary-brand mt-2 w-100">View</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">No products found.</p>
+  {% endfor %}
+</div>
+</div>
+<style>
+.product-image-wrap{overflow:hidden;border-radius:1rem 1rem 0 0;background:#eef5f3}
+.product-test-image{width:100%;height:210px;object-fit:cover;display:block;transition:transform .35s ease}
+.product-card:hover .product-test-image{transform:scale(1.025)}
+.product-card .card-title{font-weight:700;line-height:1.35;min-height:2.7em}
+@media (max-width:576px){.product-test-image{height:165px}}
+</style>
+{% endblock %}

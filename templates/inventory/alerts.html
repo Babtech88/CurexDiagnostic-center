@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Alerts{% endblock %}
+{% block content %}
+<h3 class="mb-4">Inventory Alerts</h3>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white text-danger"><strong><i class="bi bi-box-seam"></i> Low Stock ({{ low_stock|length }})</strong></div>
+      <ul class="list-group list-group-flush">
+        {% for p in low_stock %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><a href="{% url 'inventory:product_detail' p.pk %}">{{ p.name }}</a><div class="small text-muted">{{ p.stock_quantity }} left (threshold {{ p.low_stock_threshold }})</div></div>
+            <a href="{% url 'inventory:product_restock' p.pk %}" class="btn btn-sm btn-success">Restock</a>
+          </li>
+        {% empty %}<li class="list-group-item text-muted">Nothing low on stock.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white text-warning-emphasis"><strong><i class="bi bi-hourglass-split"></i> Expiring Soon ({{ expiring|length }})</strong></div>
+      <ul class="list-group list-group-flush">
+        {% for p in expiring %}
+          <li class="list-group-item">
+            <a href="{% url 'inventory:product_detail' p.pk %}">{{ p.name }}</a>
+            <div class="small text-muted">Expires {{ p.expiry_date }} ({{ p.days_to_expiry }} days left)</div>
+          </li>
+        {% empty %}<li class="list-group-item text-muted">Nothing expiring in the next 30 days.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white text-dark"><strong><i class="bi bi-exclamation-octagon"></i> Already Expired ({{ expired|length }})</strong></div>
+      <ul class="list-group list-group-flush">
+        {% for p in expired %}
+          <li class="list-group-item">
+            <a href="{% url 'inventory:product_detail' p.pk %}">{{ p.name }}</a>
+            <div class="small text-muted">Expired {{ p.expiry_date }} — remove from shelf</div>
+          </li>
+        {% empty %}<li class="list-group-item text-muted">No expired stock. 🎉</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

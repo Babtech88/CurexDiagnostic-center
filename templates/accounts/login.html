@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Login · {{ site_name }}</title>
+<link href="{% static 'vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
+<style>
+  body{
+    min-height:100vh;
+    background:
+      linear-gradient(160deg, rgba(0,30,31,.75), rgba(1,71,72,.65)),
+      url("{% static 'img/hero-bg.jpeg' %}") center/cover fixed no-repeat;
+  }
+  .login-card{
+    max-width:400px; margin:8vh auto; border-radius:1.25rem;
+    background: rgba(255,255,255,.88);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border:1px solid rgba(255,255,255,.6);
+  }
+  .btn-success{ background-color:#007e81; border-color:#007e81; }
+  .btn-success:hover{ background-color:#014748; border-color:#014748; }
+  .motto{ color:#c99400; font-weight:700; letter-spacing:.03em; }
+</style>
+</head>
+<body>
+<div class="card login-card p-4 shadow">
+  <div class="text-center mb-3">
+    <img src="{% static 'img/logo.jpeg' %}" alt="logo" style="height:64px;width:64px;object-fit:contain;">
+  </div>
+  <h4 class="mb-1 text-center">{{ site_name }}</h4>
+  <p class="motto mb-1 text-center small">{{ site_motto }}</p>
+  <p class="text-muted mb-4 text-center">Staff sign in</p>
+  {% if messages %}
+    {% for message in messages %}<div class="alert alert-{{ message.tags|default:'danger' }}">{{ message }}</div>{% endfor %}
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Username</label>
+      <input type="text" name="username" class="form-control" required autofocus>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input type="password" name="password" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-success w-100">Sign in</button>
+  </form>
+  <div class="text-center mt-3">
+    <a href="{% url 'storefront:home' %}" class="text-decoration-none small">&larr; Back to shop</a>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h3 class="mb-3">{{ title }}</h3>
+<div class="card border-0 shadow-sm p-4" style="max-width:650px;">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% include "_form_fields.html" %}
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="{% url 'equipment:equipment_list' %}" class="btn btn-outline-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

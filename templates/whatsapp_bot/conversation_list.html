@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Curex Sales Workspace{% endblock %}
+{% block extra_head %}
+<style>
+.sales-row{cursor:pointer}.sales-row:hover{background:#f0fafa}.wa-preview{max-width:320px}.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#e6f5f5;color:#007e81;font-weight:700}.unread-dot{width:9px;height:9px;border-radius:50%;background:#007e81;display:inline-block}
+</style>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <div><h3 class="mb-0"><i class="bi bi-whatsapp text-success"></i> Curex Sales</h3><div class="text-muted small">WhatsApp sales workspace</div></div>
+  <form class="d-flex gap-2" method="get">
+    <input class="form-control" name="q" value="{{ search }}" placeholder="Search customer or phone">
+    <select class="form-select" name="status"><option value="">All</option><option value="open" {% if status == 'open' %}selected{% endif %}>Open</option><option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option><option value="resolved" {% if status == 'resolved' %}selected{% endif %}>Resolved</option></select>
+    <button class="btn btn-success"><i class="bi bi-search"></i></button>
+  </form>
+</div>
+<div class="card border-0 shadow-sm overflow-hidden">
+<table class="table table-hover align-middle mb-0">
+<thead><tr><th>Conversation</th><th>Agent</th><th>Status</th><th>Last message</th><th>Last seen</th></tr></thead>
+<tbody>
+{% for c in contacts %}
+<tr class="sales-row" onclick="location.href='{% url 'whatsapp_bot:conversation_detail' c.pk %}'">
+<td><div class="d-flex align-items-center gap-2"><div class="avatar">{{ c.profile_name|default:c.wa_id|slice:':1'|upper }}</div><div><strong>{{ c.profile_name|default:"Unknown Customer" }}</strong><div class="small text-muted">{{ c.wa_id }} {% if c.unread_count %}<span class="unread-dot ms-1"></span> <span class="text-success">{{ c.unread_count }} unread</span>{% endif %}</div></div></div></td>
+<td>{% if c.assigned_agent %}{{ c.assigned_agent.get_full_name|default:c.assigned_agent.username }}{% else %}<span class="text-muted">Unassigned</span>{% endif %}</td>
+<td>{% if c.needs_human %}<span class="badge badge-soft-danger">Human</span>{% endif %} <span class="badge {% if c.conversation_status == 'open' %}badge-soft-success{% elif c.conversation_status == 'pending' %}badge-soft-warning{% else %}text-bg-secondary{% endif %}">{{ c.get_conversation_status_display }}</span></td>
+<td class="small text-muted wa-preview">{{ c.messages.all.0.body|truncatechars:70 }}</td><td class="small text-muted">{{ c.last_seen|naturaltime }}</td>
+</tr>
+{% empty %}<tr><td colspan="5" class="text-center py-5 text-muted">No WhatsApp conversations found.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+<h3 class="mb-3">Categories</h3>
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="card border-0 shadow-sm">
+      <ul class="list-group list-group-flush">
+        {% for c in categories %}
+          <li class="list-group-item d-flex justify-content-between">
+            <div><strong>{{ c.name }}</strong><div class="small text-muted">{{ c.description }}</div></div>
+            <form method="post" action="{% url 'inventory:category_delete' c.pk %}" onsubmit="return confirm('Delete this category?');">
+              {% csrf_token %}<button class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+          </li>
+        {% empty %}<li class="list-group-item text-muted">No categories yet.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card border-0 shadow-sm p-3">
+      <strong class="mb-2">Add Category</strong>
+      <form method="post">
+        {% csrf_token %}
+        {% include "_form_fields.html" %}
+        <button class="btn btn-success">Add</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

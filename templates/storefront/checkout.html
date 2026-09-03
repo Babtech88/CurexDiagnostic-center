@@ -1,0 +1,35 @@
+{% extends "base_public.html" %}
+{% load humanize %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<div class="container py-5">
+<h3 class="mb-3 font-heading">Checkout</h3>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="brand-card p-4">
+      <form method="post">
+        {% csrf_token %}
+        {% include "_form_fields.html" %}
+        <button type="submit" class="btn btn-primary-brand w-100"><i class="bi bi-whatsapp"></i> Send Order on WhatsApp</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="brand-card p-0">
+      <div class="card-header bg-white"><strong>Booking Summary</strong></div>
+      <ul class="list-group list-group-flush">
+        {% for line in line_items %}
+          <li class="list-group-item d-flex justify-content-between">
+            <span>{{ line.quantity }} x {{ line.product.name }}</span>
+            <span>₦{{ line.subtotal|intcomma }}</span>
+          </li>
+        {% endfor %}
+        <li class="list-group-item d-flex justify-content-between fw-bold">
+          <span>Total</span><span>₦{{ total|intcomma }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

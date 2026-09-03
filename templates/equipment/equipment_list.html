@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Equipment Monitor{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h3 class="mb-0"><i class="bi bi-cpu"></i> Equipment Monitor</h3>
+  {% if request.user.is_superuser or request.user.staff_profile.is_manager_or_admin %}
+  <a href="{% url 'equipment:equipment_create' %}" class="btn btn-success btn-sm"><i class="bi bi-plus-lg"></i> Add Equipment</a>
+  {% endif %}
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4 col-6">
+    <div class="card card-kpi p-3 border-start border-4 border-success">
+      <div class="text-muted small">Operational</div>
+      <div class="fs-4 fw-bold">{{ operational_count }}</div>
+    </div>
+  </div>
+  <div class="col-md-4 col-6">
+    <div class="card card-kpi p-3 border-start border-4 border-warning">
+      <div class="text-muted small">Needs Attention</div>
+      <div class="fs-4 fw-bold">{{ attention_count }}</div>
+    </div>
+  </div>
+  <div class="col-md-4 col-6">
+    <div class="card card-kpi p-3 border-start border-4 border-danger">
+      <div class="text-muted small">Overdue Maintenance</div>
+      <div class="fs-4 fw-bold">{{ overdue_count }}</div>
+    </div>
+  </div>
+</div>
+
+<form method="get" class="mb-3">
+  <select name="status" class="form-select" style="max-width:250px;" onchange="this.form.submit()">
+    <option value="">All statuses</option>
+    <option value="operational" {% if status == "operational" %}selected{% endif %}>Operational</option>
+    <option value="needs_maintenance" {% if status == "needs_maintenance" %}selected{% endif %}>Needs Maintenance</option>
+    <option value="under_repair" {% if status == "under_repair" %}selected{% endif %}>Under Repair</option>
+    <option value="offline" {% if status == "offline" %}selected{% endif %}>Offline</option>
+  </select>
+</form>
+
+<div class="row g-3">
+  {% for item in equipment %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        {% if item.photo %}<img src="{{ item.photo.url }}" class="card-img-top" style="height:160px;object-fit:cover;">{% endif %}
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <h6 class="card-title mb-1"><a href="{% url 'equipment:equipment_detail' item.pk %}">{{ item.name }}</a></h6>
+            {% if item.status == "operational" %}<span class="badge badge-soft-success">Operational</span>
+            {% elif item.status == "needs_maintenance" %}<span class="badge badge-soft-warning">Needs Maintenance</span>
+            {% elif item.status == "under_repair" %}<span class="badge badge-soft-danger">Under Repair</span>
+            {% else %}<span class="badge text-bg-secondary">Offline</span>{% endif %}
+          </div>
+          <p class="small text-muted mb-1">{{ item.equipment_type }} {% if item.location %}&middot; {{ item.location }}{% endif %}</p>
+          {% if item.is_overdue_for_maintenance %}
+            <p class="small text-danger mb-2"><i class="bi bi-exclamation-triangle-fill"></i> Maintenance overdue since {{ item.next_maintenance_date }}</p>
+          {% elif item.is_maintenance_due_soon %}
+            <p class="small text-warning mb-2"><i class="bi bi-clock-fill"></i> Maintenance due {{ item.next_maintenance_date }}</p>
+          {% endif %}
+          <form method="post" action="{% url 'equipment:equipment_quick_status' item.pk %}" class="d-flex gap-1">
+            {% csrf_token %}
+            <select name="status" class="form-select form-select-sm">
+              {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if item.status == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            <button class="btn btn-sm btn-outline-secondary">Set</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted text-center py-4">No equipment recorded yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,329 @@
+{% extends "base_public.html" %}
+{% load humanize static %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<!-- ===== HERO ===== -->
+<section class="hero-section">
+  <div class="container hero-content" data-aos="fade-up">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <h1>Accurate Diagnostics.<br>Compassionate Care.<br>Trusted Results.</h1>
+        <p class="hero-sub mt-3">Fast, reliable laboratory and imaging services delivered with international standards at {{ site_name }}.</p>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a href="{% url 'storefront:catalog' %}" class="btn btn-accent btn-lg"><i class="bi bi-calendar-check"></i> Book Appointment</a>
+          <a href="{% url 'storefront:catalog' %}" class="btn btn-outline-light btn-lg">View Tests</a>
+          <a href="https://wa.me/{{ whatsapp_number }}" target="_blank" class="btn btn-light btn-lg text-success"><i class="bi bi-whatsapp"></i> Chat on WhatsApp</a>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-item" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-num counter" data-target="{{ total_tests }}">0</div>
+            <div class="stat-label">Medical Tests</div>
+          </div>
+          <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-num counter" data-target="{{ total_categories }}">0</div>
+            <div class="stat-label">Specialties Covered</div>
+          </div>
+          <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-num"><i class="bi bi-whatsapp"></i></div>
+            <div class="stat-label">Book via WhatsApp</div>
+          </div>
+          <div class="stat-item" data-aos="fade-up" data-aos-delay="400">
+            <div class="stat-num"><i class="bi bi-truck"></i></div>
+            <div class="stat-label">Home Sample Collection</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if promotions %}
+<div class="container mt-4" data-aos="fade-up">
+  <div class="brand-card p-4" style="border-left:6px solid var(--accent);">
+    <h5 class="mb-1">🔥 Active Promotions</h5>
+    {% for promo in promotions %}
+      <div class="mb-1 small"><strong>{{ promo.title }}</strong> — {{ promo.discount_percent }}% off. {{ promo.banner_text }} <span class="text-muted">(ends {{ promo.end_date }})</span></div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- ===== ABOUT ===== -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6" data-aos="fade-right">
+        <span class="section-eyebrow">About Us</span>
+        <h2 class="section-title">Diagnostic care built around you</h2>
+        <p class="section-sub">{{ site_name }} is committed to "{{ site_motto|lower }}" — combining modern testing standards with a genuinely patient-first approach. From routine screening to specialist panels, we make getting tested simple, fast, and stress-free.</p>
+        <div class="d-flex gap-3 mt-4">
+          <div><i class="bi bi-geo-alt-fill text-success"></i> {{ site_address }}</div>
+        </div>
+      </div>
+      <div class="col-lg-6" data-aos="fade-left">
+        <img src="{% static 'img/hero-bg.jpeg' %}" class="img-fluid rounded-4 shadow" alt="Patient care at {{ site_name }}">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WHY CHOOSE US ===== -->
+<section class="section bg-tint" id="why-us">
+  <div class="container text-center">
+    <span class="section-eyebrow">Why Choose Curex</span>
+    <h2 class="section-title">A diagnostic partner you can trust</h2>
+    <div class="row g-4 mt-3">
+      <div class="col-6 col-lg-4" data-aos="zoom-in" data-aos-delay="0">
+        <div class="brand-card feature-card"><div class="icon-wrap-img"><img src="{% static 'img/features/certified-laboratory.jpg' %}" alt="Certified Laboratory" loading="lazy"></div><h6>Certified Laboratory</h6><p class="small text-muted mb-0">Rigorous quality standards on every test</p></div>
+      </div>
+      <div class="col-6 col-lg-4" data-aos="zoom-in" data-aos-delay="100">
+        <div class="brand-card feature-card"><div class="icon-wrap-img"><img src="{% static 'img/features/experienced-professionals.jpg' %}" alt="Experienced Professionals" loading="lazy"></div><h6>Experienced Professionals</h6><p class="small text-muted mb-0">Skilled lab technicians &amp; sonographers</p></div>
+      </div>
+      <div class="col-6 col-lg-4" data-aos="zoom-in" data-aos-delay="200">
+        <div class="brand-card feature-card"><div class="icon-wrap-img"><img src="{% static 'img/features/fast-turnaround.jpg' %}" alt="Fast Turnaround Time" loading="lazy"></div><h6>Fast Turnaround Time</h6><p class="small text-muted mb-0">Results delivered promptly</p></div>
+      </div>
+      <div class="col-6 col-lg-4" data-aos="zoom-in" data-aos-delay="300">
+        <div class="brand-card feature-card"><div class="icon-wrap-img"><img src="{% static 'img/features/best-price.jpg' %}" alt="Affordable Pricing" loading="lazy"></div><h6>Affordable Pricing</h6><p class="small text-muted mb-0">Transparent, upfront prices</p></div>
+      </div>
+      <div class="col-6 col-lg-4" data-aos="zoom-in" data-aos-delay="400">
+        <div class="brand-card feature-card"><div class="icon-wrap-img"><img src="{% static 'img/features/modern-equipment.jpg' %}" alt="Modern Equipment" loading="lazy"></div><h6>Modern Equipment</h6><p class="small text-muted mb-0">Reliable, well-maintained instruments</p></div>
+      </div>
+      <div class="col-6 col-lg-4" data-aos="zoom-in" data-aos-delay="500">
+        <div class="brand-card feature-card"><div class="icon-wrap-img"><img src="{% static 'img/features/home-collection.jpg' %}" alt="Home Sample Collection" loading="lazy"></div><h6>Home Sample Collection</h6><p class="small text-muted mb-0">We come to you, on request</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURED SERVICES ===== -->
+{% if showcase_services %}
+<section class="section" id="services">
+  <div class="container text-center">
+    <span class="section-eyebrow">Featured Services</span>
+    <h2 class="section-title">Popular tests &amp; scans</h2>
+    <div class="row g-4 mt-3">
+      {% for item in showcase_services %}
+        <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:0 }}00">
+          <div class="brand-card service-card service-card-photo text-start">
+            <div class="service-photo">
+              {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.label }} diagnostic test" loading="lazy">
+              {% else %}
+                <div class="service-photo-fallback"><i class="bi {{ item.icon }}"></i></div>
+              {% endif %}
+            </div>
+            <div class="service-card-body p-4">
+              <h6>{{ item.label }}</h6>
+              <p class="small text-muted">{{ item.product.description|default:"Book this test at your convenience."|truncatewords:14 }}</p>
+              <div class="price mb-2">₦{{ item.product.current_price|intcomma }}</div>
+              <a href="{% url 'storefront:product_detail' item.product.pk %}" class="btn btn-primary-brand btn-sm w-100">Book Now</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <a href="{% url 'storefront:catalog' %}" class="btn btn-outline-brand mt-4">See All {{ total_tests }} Tests &amp; Services &rarr;</a>
+  </div>
+</section>
+{% endif %}
+
+<!-- ===== BOOKING PROCESS ===== -->
+<section class="section bg-tint booking-process-section">
+  <div class="container text-center">
+    <span class="section-eyebrow">How It Works</span>
+    <h2 class="section-title">Booking your test is simple</h2>
+    <p class="section-sub mx-auto">Get accurate results in just a few simple steps.</p>
+    <div class="booking-flow mt-4">
+      <div class="booking-step" data-aos="fade-up">
+        <div class="booking-photo"><img src="{% static 'img/booking/choose-test.jpg' %}" alt="Choose a diagnostic test" loading="lazy"><span>1</span></div>
+        <h6>Choose Test</h6><p>Browse our catalog and select the tests you need.</p>
+      </div>
+      <div class="timeline-arrow d-none d-lg-block"><i class="bi bi-arrow-right"></i></div>
+      <div class="booking-step" data-aos="fade-up" data-aos-delay="100">
+        <div class="booking-photo"><img src="{% static 'img/booking/book-appointment.jpg' %}" alt="Book an appointment on WhatsApp" loading="lazy"><span>2</span></div>
+        <h6>Book Appointment</h6><p>Book online or via WhatsApp at your convenience.</p>
+      </div>
+      <div class="timeline-arrow d-none d-lg-block"><i class="bi bi-arrow-right"></i></div>
+      <div class="booking-step" data-aos="fade-up" data-aos-delay="200">
+        <div class="booking-photo"><img src="{% static 'img/booking/visit-centre.jpg' %}" alt="Visit the Curex diagnostic centre" loading="lazy"><span>3</span></div>
+        <h6>Visit Centre</h6><p>Walk in or request our home sample collection service.</p>
+      </div>
+      <div class="timeline-arrow d-none d-lg-block"><i class="bi bi-arrow-right"></i></div>
+      <div class="booking-step" data-aos="fade-up" data-aos-delay="300">
+        <div class="booking-photo"><img src="{% static 'img/booking/receive-results.jpg' %}" alt="Receive diagnostic test results" loading="lazy"><span>4</span></div>
+        <h6>Receive Results</h6><p>Get your accurate results quickly and securely.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOME SAMPLE COLLECTION ===== -->
+<section class="section">
+  <div class="container">
+    <div class="sample-collection p-5" data-aos="zoom-in">
+      <div class="row align-items-center">
+        <div class="col-md-3 text-center mb-4 mb-md-0">
+          <div class="icon-badge-img"><img src="{% static 'img/features/home-collection.jpg' %}" alt="Home sample collection courier" loading="lazy"></div>
+        </div>
+        <div class="col-md-6">
+          <h3>Can't come to us? We'll come to you.</h3>
+          <p class="mb-0 opacity-90">Skip the trip — our team can collect your sample at home or the office. Fast, safe, and convenient, with the same accuracy you'd get in-centre.</p>
+          <ul class="list-unstyled mt-3 small">
+            <li><i class="bi bi-check-circle-fill"></i> Trained sample collectors</li>
+            <li><i class="bi bi-check-circle-fill"></i> Safe handling &amp; transport</li>
+            <li><i class="bi bi-check-circle-fill"></i> Same test menu as in-centre</li>
+          </ul>
+        </div>
+        <div class="col-md-3 text-center">
+          <a href="{% url 'storefront:catalog' %}" class="btn btn-light fw-bold">Book Home Visit</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+{% if testimonials %}
+<section class="section bg-tint">
+  <div class="container text-center">
+    <span class="section-eyebrow">Testimonials</span>
+    <h2 class="section-title">What our patients say</h2>
+    <div id="testimonialCarousel" class="carousel slide mt-4" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        {% for t in testimonials %}
+          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <div class="row justify-content-center">
+              <div class="col-md-6">
+                <div class="brand-card testimonial-card">
+                  {% if t.photo %}<img src="{{ t.photo.url }}" alt="{{ t.patient_name }}">{% endif %}
+                  <div class="stars mb-2">{% for i in "12345" %}<i class="bi {% if forloop.counter <= t.rating %}bi-star-fill{% else %}bi-star{% endif %}"></i>{% endfor %}</div>
+                  <p class="fst-italic">"{{ t.quote }}"</p>
+                  <div class="fw-bold">{{ t.patient_name }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      {% if testimonials|length > 1 %}
+      <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" style="filter:invert(1) grayscale(1);"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" style="filter:invert(1) grayscale(1);"></span>
+      </button>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ===== EQUIPMENT & FACILITIES ===== -->
+<section class="section" id="equipment">
+  <div class="container text-center">
+    <span class="section-eyebrow">Our Facility</span>
+    <h2 class="section-title">Equipment Behind Your Results</h2>
+    <p class="section-sub mx-auto">The instruments and systems we use to run the tests in our catalog — from routine bloodwork to imaging.</p>
+    <div class="row g-4 mt-3">
+      <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="0">
+        <div class="brand-card equipment-card">
+          <img src="{% static 'img/equipment/blood-cell-analyzer.jpg' %}" alt="Automated blood cell analyzer" loading="lazy">
+          <div class="p-3"><h6 class="mb-0">Blood Cell Analyzer</h6><p class="small text-muted mb-0">Automated haematology &amp; blood count testing</p></div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="brand-card equipment-card">
+          <img src="{% static 'img/equipment/hematology-analyzer-compact.jpg' %}" alt="Chemistry analyzer" loading="lazy">
+          <div class="p-3"><h6 class="mb-0">Chemistry Analyzer</h6><p class="small text-muted mb-0">Electrolytes, lipids, liver &amp; kidney panels</p></div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="brand-card equipment-card">
+          <img src="{% static 'img/equipment/ultrasound-scanner.jpg' %}" alt="Ultrasound scanner in use" loading="lazy">
+          <div class="p-3"><h6 class="mb-0">Digital Ultrasound Scanner</h6><p class="small text-muted mb-0">Obstetric, abdominal &amp; pelvic imaging</p></div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="brand-card equipment-card">
+          <img src="{% static 'img/equipment/ecg-machine.jpg' %}" alt="Portable ECG machine" loading="lazy">
+          <div class="p-3"><h6 class="mb-0">ECG Machine</h6><p class="small text-muted mb-0">Pre &amp; post-exercise cardiac monitoring</p></div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="400">
+        <div class="brand-card equipment-card">
+          <img src="{% static 'img/equipment/blood-culture-bottles.jpg' %}" alt="Blood culture system" loading="lazy">
+          <div class="p-3"><h6 class="mb-0">Blood Culture System</h6><p class="small text-muted mb-0">Culture &amp; sensitivity testing</p></div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="500">
+        <div class="brand-card equipment-card">
+          <img src="{% static 'img/equipment/widal-test-kit.jpg' %}" alt="Rapid Widal test kit" loading="lazy">
+          <div class="p-3"><h6 class="mb-0">Rapid Test Kits</h6><p class="small text-muted mb-0">Widal, malaria, HIV &amp; more</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HEALTH ARTICLES ===== -->
+{% if articles %}
+<section class="section bg-tint">
+  <div class="container text-center">
+    <span class="section-eyebrow">Health Hub</span>
+    <h2 class="section-title">Latest Health Articles</h2>
+    <div class="row g-4 mt-3">
+      {% for a in articles %}
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:0 }}00">
+          <div class="brand-card article-card text-start h-100">
+            {% if a.cover_image %}<img src="{{ a.cover_image.url }}" loading="lazy" alt="{{ a.title }}">{% endif %}
+            <div class="p-3">
+              <div class="article-cat">{{ a.category|default:"Health" }}</div>
+              <h6 class="mt-1">{{ a.title }}</h6>
+              <p class="small text-muted">{{ a.excerpt|default:a.body|truncatewords:16 }}</p>
+              <div class="small text-muted mb-2">{{ a.published_at|date:"d M Y" }}</div>
+              <a href="{% url 'articles:detail' a.slug %}" class="btn btn-sm btn-outline-brand">Read More</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ===== CTA ===== -->
+<section class="section">
+  <div class="container">
+    <div class="cta-section" data-aos="zoom-in">
+      <h2 class="text-white">Need a medical test today?</h2>
+      <p class="opacity-90">Book your appointment in less than 60 seconds.</p>
+      <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+        <a href="{% url 'storefront:catalog' %}" class="btn btn-accent btn-lg">Book Now</a>
+        <a href="https://wa.me/{{ whatsapp_number }}" target="_blank" class="btn btn-outline-light btn-lg"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="contact"></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Simple count-up animation for real, dynamic stats
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".counter").forEach(function (el) {
+      var target = parseInt(el.getAttribute("data-target"), 10) || 0;
+      var current = 0;
+      var step = Math.max(1, Math.ceil(target / 40));
+      var timer = setInterval(function () {
+        current += step;
+        if (current >= target) { current = target; clearInterval(timer); }
+        el.textContent = current + "+";
+      }, 30);
+    });
+  });
+</script>
+{% endblock %}

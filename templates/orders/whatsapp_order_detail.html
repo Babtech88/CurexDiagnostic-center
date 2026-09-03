@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Order #{{ order.pk }}{% endblock %}
+{% block content %}
+<h3 class="mb-1">WhatsApp Booking #{{ order.pk }}</h3>
+<p class="text-muted">{{ order.customer_name }} · {{ order.customer_phone }} · {{ order.created_at|date:"d M Y H:i" }}</p>
+
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="card border-0 shadow-sm">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
+          <tbody>
+          {% for item in order.items.all %}
+            <tr><td>{{ item.product.name }}</td><td>{{ item.quantity }}</td><td>₦{{ item.unit_price|intcomma }}</td><td>₦{{ item.subtotal|intcomma }}</td></tr>
+          {% endfor %}
+          </tbody>
+          <tfoot><tr><th colspan="3" class="text-end">Total</th><th>₦{{ order.total_amount|floatformat:2|intcomma }}</th></tr></tfoot>
+        </table>
+      </div>
+    </div>
+    {% if order.wants_delivery %}
+      <div class="alert alert-info mt-3"><i class="bi bi-truck"></i> Home sample collection requested at: <strong>{{ order.delivery_address }}</strong></div>
+    {% endif %}
+    {% if order.notes %}<div class="alert alert-secondary">Notes: {{ order.notes }}</div>{% endif %}
+  </div>
+  <div class="col-md-5">
+    <div class="card border-0 shadow-sm p-3">
+      <p><strong>Status:</strong> <span class="badge text-bg-secondary">{{ order.get_status_display }}</span></p>
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <a href="{% url 'orders:whatsapp_order_set_status' order.pk 'confirmed' %}" class="btn btn-sm btn-outline-success">Mark Confirmed</a>
+        <a href="{% url 'orders:whatsapp_order_set_status' order.pk 'fulfilled' %}" class="btn btn-sm btn-outline-primary">Mark Fulfilled</a>
+        <a href="{% url 'orders:whatsapp_order_set_status' order.pk 'cancelled' %}" class="btn btn-sm btn-outline-danger">Cancel</a>
+      </div>
+      <a href="{{ wa_link }}" target="_blank" class="btn btn-success mb-2"><i class="bi bi-whatsapp"></i> Message Patient on WhatsApp</a>
+      {% if order.resulting_sales.exists %}
+        <a href="{% url 'sales:sale_detail' order.resulting_sales.first.pk %}" class="btn btn-outline-secondary">View Linked Booking</a>
+      {% else %}
+        <form method="post" action="{% url 'orders:whatsapp_order_convert' order.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-dark w-100">Convert to Booking (deduct stock/consumables)</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

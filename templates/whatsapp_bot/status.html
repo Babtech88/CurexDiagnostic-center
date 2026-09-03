@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}WhatsApp Booking Status{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="mb-1">WhatsApp Booking Status</h2>
+      <p class="text-muted mb-0">Curex is configured for assisted WhatsApp booking through WhatsApp Business / WhatsApp Web.</p>
+    </div>
+    {% if ready %}<span class="badge text-bg-success fs-6">ACTIVE — NO META API REQUIRED</span>{% else %}<span class="badge text-bg-warning fs-6">CHECK WHATSAPP NUMBER</span>{% endif %}
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-6 col-lg-4"><div class="brand-card p-3"><div class="small text-muted">Booking mode</div><div class="fw-bold mt-1">{% if assisted %}Assisted WhatsApp{% else %}{{ mode|title }}{% endif %}</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="brand-card p-3"><div class="small text-muted">Business number</div><div class="fw-bold mt-1">{% if business_number %}+{{ business_number }}{% else %}Not configured{% endif %}</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="brand-card p-3"><div class="small text-muted">System status</div><div class="fw-bold mt-1">{% if ready %}Ready for customer bookings{% else %}Needs configuration{% endif %}</div></div></div>
+  </div>
+
+  <div class="brand-card p-4 mt-4">
+    <h5><i class="bi bi-check2-circle text-success"></i> How this mode works</h5>
+    <ol class="mb-0">
+      <li>A customer selects tests and completes the Curex booking form.</li>
+      <li>Curex saves the booking in the local sales workspace.</li>
+      <li>The customer is opened into WhatsApp with the booking details pre-filled.</li>
+      <li>Your team receives and manages the booking manually in WhatsApp Business.</li>
+      <li>Staff can open the saved booking in Curex, update payment/status, and convert it to a sale.</li>
+    </ol>
+    <p class="small text-muted mt-3 mb-0">No Meta developer account, webhook, public HTTPS endpoint, Cloud API token, or Phone Number ID is required for this assisted workflow.</p>
+  </div>
+</div>
+{% endblock %}

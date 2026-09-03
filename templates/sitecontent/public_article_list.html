@@ -1,0 +1,29 @@
+{% extends "base_public.html" %}
+{% load static %}
+{% block title %}Health Articles{% endblock %}
+{% block content %}
+<div class="container py-5">
+<div class="text-center mb-4" data-aos="fade-up">
+  <span class="section-eyebrow">Health Hub</span>
+  <h2 class="section-title">Health Articles</h2>
+</div>
+<div class="row g-4">
+  {% for a in articles %}
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:0 }}0">
+      <div class="brand-card article-card h-100">
+        {% if a.cover_image %}<img src="{{ a.cover_image.url }}" loading="lazy" alt="{{ a.title }}">{% endif %}
+        <div class="p-3">
+          <div class="article-cat">{{ a.category|default:"Health" }}</div>
+          <h6 class="mt-1">{{ a.title }}</h6>
+          <p class="small text-muted">{{ a.excerpt|default:a.body|truncatewords:20 }}</p>
+          <div class="small text-muted mb-2">{{ a.published_at|date:"d M Y" }}</div>
+          <a href="{% url 'articles:detail' a.slug %}" class="btn btn-sm btn-outline-brand">Read More</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted text-center">No articles published yet — check back soon.</p>
+  {% endfor %}
+</div>
+</div>
+{% endblock %}

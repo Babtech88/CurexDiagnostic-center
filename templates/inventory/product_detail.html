@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+  <div>
+    <h3 class="mb-0">{{ product.name }}</h3>
+    <div class="text-muted">Code: {{ product.sku }} · {{ product.category.name|default:"Uncategorized" }}</div>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'inventory:product_restock' product.pk %}" class="btn btn-success btn-sm"><i class="bi bi-plus-circle"></i> Restock</a>
+    <a href="{% url 'inventory:product_edit' product.pk %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm p-3">
+      {% if product.image %}<img src="{{ product.image.url }}" class="img-fluid rounded mb-3">{% endif %}
+      <dl class="row mb-0">
+        <dt class="col-6">Selling Price</dt><dd class="col-6">₦{{ product.selling_price|intcomma }}</dd>
+        <dt class="col-6">Cost Price</dt><dd class="col-6">₦{{ product.cost_price|intcomma }}</dd>
+        <dt class="col-6">Stock</dt><dd class="col-6">{{ product.stock_quantity }}</dd>
+        <dt class="col-6">Low Stock At</dt><dd class="col-6">{{ product.low_stock_threshold }}</dd>
+        <dt class="col-6">Expiry</dt><dd class="col-6">{{ product.expiry_date|default:"N/A" }}</dd>
+        <dt class="col-6">Supplier</dt><dd class="col-6">{{ product.supplier.name|default:"—" }}</dd>
+        <dt class="col-6">Status</dt>
+        <dd class="col-6">
+          {% if product.is_expired %}<span class="badge badge-soft-danger">Expired</span>
+          {% elif product.is_low_stock %}<span class="badge badge-soft-warning">Low Stock</span>
+          {% else %}<span class="badge badge-soft-success">Healthy</span>{% endif %}
+        </dd>
+      </dl>
+      {% if product.description %}<p class="mt-2 mb-0 text-muted">{{ product.description }}</p>{% endif %}
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>Stock Movement History</strong></div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead><tr><th>Date</th><th>Change</th><th>Reason</th><th>Note</th><th>By</th></tr></thead>
+          <tbody>
+          {% for m in movements %}
+            <tr>
+              <td class="small text-muted">{{ m.created_at|date:"d M Y H:i" }}</td>
+              <td class="{% if m.quantity_change < 0 %}text-danger{% else %}text-success{% endif %} fw-bold">
+                {{ m.quantity_change|stringformat:"+d" }}
+              </td>
+              <td>{{ m.get_reason_display }}</td>
+              <td class="small">{{ m.note }}</td>
+              <td class="small">{{ m.created_by.username|default:"—" }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No movements recorded yet.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}WhatsApp Bookings{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h3 class="mb-0"><i class="bi bi-whatsapp text-success"></i> WhatsApp Bookings</h3>
+  <form method="get">
+    <select name="status" class="form-select" onchange="this.form.submit()">
+      <option value="">All statuses</option>
+      <option value="pending" {% if status == "pending" %}selected{% endif %}>Pending</option>
+      <option value="confirmed" {% if status == "confirmed" %}selected{% endif %}>Confirmed</option>
+      <option value="fulfilled" {% if status == "fulfilled" %}selected{% endif %}>Fulfilled</option>
+      <option value="cancelled" {% if status == "cancelled" %}selected{% endif %}>Cancelled</option>
+    </select>
+  </form>
+</div>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>#</th><th>Patient</th><th>Phone</th><th>Items</th><th>Total</th><th>Delivery?</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+      {% for o in orders %}
+        <tr>
+          <td><a href="{% url 'orders:whatsapp_order_detail' o.pk %}">#{{ o.pk }}</a></td>
+          <td>{{ o.customer_name }}</td>
+          <td>{{ o.customer_phone }}</td>
+          <td>{{ o.items.count }}</td>
+          <td>₦{{ o.total_amount|floatformat:2|intcomma }}</td>
+          <td>{% if o.wants_delivery %}<i class="bi bi-truck text-success"></i>{% else %}—{% endif %}</td>
+          <td><span class="badge text-bg-secondary">{{ o.get_status_display }}</span></td>
+          <td class="small text-muted">{{ o.created_at|naturaltime }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="8" class="text-center text-muted py-4">No WhatsApp orders yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

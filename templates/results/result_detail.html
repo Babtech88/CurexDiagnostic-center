@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Result — {{ result.customer.name }}{% endblock %}
+{% block content %}
+<h3 class="mb-1">{{ result.product.name|default:"Test Result" }}</h3>
+<p class="text-muted">{{ result.customer.name }} ({{ result.customer.phone_number }}) &middot; uploaded {{ result.uploaded_at|naturaltime }}</p>
+
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="card border-0 shadow-sm p-3">
+      <a href="{{ result.file.url }}" target="_blank" class="btn btn-outline-secondary mb-2"><i class="bi bi-box-arrow-up-right"></i> Open File</a>
+      {% if result.file.url|lower|slice:"-4:" == ".pdf" %}
+        <iframe src="{{ result.file.url }}" style="width:100%; height:60vh; border:1px solid #eee;"></iframe>
+      {% else %}
+        <img src="{{ result.file.url }}" class="img-fluid rounded">
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card border-0 shadow-sm p-3">
+      <dl class="row mb-3">
+        <dt class="col-6">Access Code</dt><dd class="col-6"><code class="fs-6">{{ result.access_code }}</code></dd>
+        <dt class="col-6">Released to Patient</dt>
+        <dd class="col-6">{% if result.is_released %}<span class="badge badge-soft-success">Yes</span>{% else %}<span class="badge badge-soft-warning">Hidden</span>{% endif %}</dd>
+        <dt class="col-6">Patient Notified</dt>
+        <dd class="col-6">{{ result.patient_notified_at|default:"Not yet" }}</dd>
+        <dt class="col-6">Sample Date</dt><dd class="col-6">{{ result.test_date|default:"—" }}</dd>
+      </dl>
+      {% if result.result_summary %}<p><strong>Summary:</strong> {{ result.result_summary }}</p>{% endif %}
+      {% if result.notes %}<p class="small text-muted"><strong>Internal notes:</strong> {{ result.notes }}</p>{% endif %}
+
+      <form method="post" action="{% url 'results:result_notify' result.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success w-100 mb-2"><i class="bi bi-whatsapp"></i> Send Result Link to Patient</button>
+      </form>
+      <p class="small text-muted mb-0">
+        Sends the patient their phone number + access code via WhatsApp so they can view and
+        print it themselves at <code>/results/</code>.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

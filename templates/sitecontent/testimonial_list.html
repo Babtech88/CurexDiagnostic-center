@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Testimonials{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0"><i class="bi bi-chat-quote"></i> Testimonials</h3>
+  <a href="{% url 'sitecontent:testimonial_create' %}" class="btn btn-success btn-sm"><i class="bi bi-plus-lg"></i> Add Testimonial</a>
+</div>
+<p class="text-muted small">Only real patient testimonials, please — add them here as patients share them. Only "Approved" ones appear on the public homepage.</p>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Patient</th><th>Rating</th><th>Quote</th><th>Approved</th><th></th></tr></thead>
+      <tbody>
+      {% for t in testimonials %}
+        <tr>
+          <td>{{ t.patient_name }}</td>
+          <td>{{ t.rating }} <i class="bi bi-star-fill text-warning"></i></td>
+          <td class="small">{{ t.quote|truncatechars:60 }}</td>
+          <td>{% if t.is_approved %}<span class="badge badge-soft-success">Live</span>{% else %}<span class="badge badge-soft-warning">Hidden</span>{% endif %}</td>
+          <td class="text-end">
+            <a href="{% url 'sitecontent:testimonial_edit' t.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+            <a href="{% url 'sitecontent:testimonial_delete' t.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="text-center text-muted py-4">No testimonials yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

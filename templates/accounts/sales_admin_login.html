@@ -1,0 +1,12 @@
+{% load static %}
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sales Admin Login</title><link href="{% static 'vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet"></head>
+<body class="bg-light"><div class="container"><div class="card shadow-sm mx-auto mt-5" style="max-width:420px"><div class="card-body p-4">
+<h3 class="text-center mb-1">Curex Sales Admin</h3><p class="text-muted text-center mb-4">Sales management access</p>
+{% if messages %}{% for message in messages %}<div class="alert alert-danger">{{ message }}</div>{% endfor %}{% endif %}
+<form method="post">{% csrf_token %}
+<div class="mb-3"><label class="form-label">Username</label><input name="username" class="form-control" required autofocus></div>
+<div class="mb-3"><label class="form-label">Password</label><input type="password" name="password" class="form-control" required></div>
+<button class="btn btn-primary w-100">Sign in as Sales Admin</button></form>
+<p class="small text-muted text-center mt-3 mb-0">This is separate from the main Django system administrator.</p>
+</div></div></div></body></html>

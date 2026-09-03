@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Tests & Services{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h3 class="mb-0">Tests & Services</h3>
+  <div class="d-flex gap-2">
+    <a href="{% url 'inventory:category_list' %}" class="btn btn-outline-secondary btn-sm">Categories</a>
+    <a href="{% url 'inventory:supplier_list' %}" class="btn btn-outline-secondary btn-sm">Suppliers</a>
+    <a href="{% url 'inventory:product_create' %}" class="btn btn-success btn-sm"><i class="bi bi-plus-lg"></i> Add Test / Item</a>
+  </div>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-auto"><input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by name or code"></div>
+  <div class="col-auto">
+    <select name="filter" class="form-select">
+      <option value="">All products</option>
+      <option value="low_stock" {% if filter_type == "low_stock" %}selected{% endif %}>Low stock only</option>
+      <option value="expiring" {% if filter_type == "expiring" %}selected{% endif %}>Expiring / expired</option>
+    </select>
+  </div>
+  <div class="col-auto"><button class="btn btn-outline-primary">Filter</button></div>
+</form>
+
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Product</th><th>Code</th><th>Category</th><th>Price</th><th>Stock</th><th>Expiry</th><th></th></tr></thead>
+      <tbody>
+      {% for p in products %}
+        <tr>
+          <td><a href="{% url 'inventory:product_detail' p.pk %}">{{ p.name }}</a></td>
+          <td class="text-muted">{{ p.sku }}</td>
+          <td>{{ p.category.name|default:"—" }}</td>
+          <td>₦{{ p.selling_price|intcomma }}</td>
+          <td>
+            {{ p.stock_quantity }}
+            {% if p.is_low_stock %}<span class="badge badge-soft-danger ms-1">Low</span>{% endif %}
+          </td>
+          <td>
+            {% if p.expiry_date %}
+              {{ p.expiry_date }}
+              {% if p.is_expired %}<span class="badge badge-soft-danger ms-1">Expired</span>
+              {% elif p.is_expiring_soon %}<span class="badge badge-soft-warning ms-1">Soon</span>{% endif %}
+            {% else %}—{% endif %}
+          </td>
+          <td class="text-end">
+            <a href="{% url 'inventory:product_edit' p.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+            <a href="{% url 'inventory:product_delete' p.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No products found.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

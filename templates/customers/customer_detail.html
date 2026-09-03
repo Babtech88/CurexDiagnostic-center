@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ customer.name }}{% endblock %}
+{% block content %}
+<h3 class="mb-1">{{ customer.name }}</h3>
+<p class="text-muted">{{ customer.phone_number }} · {{ customer.email|default:"no email" }}</p>
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>Purchase History</strong></div>
+      <ul class="list-group list-group-flush">
+        {% for sale in sales %}
+          <li class="list-group-item d-flex justify-content-between">
+            <a href="{% url 'sales:sale_detail' sale.pk %}">Booking #{{ sale.pk }}</a>
+            <span>₦{{ sale.total_amount|floatformat:2|intcomma }} · {{ sale.created_at|date:"d M Y" }}</span>
+          </li>
+        {% empty %}<li class="list-group-item text-muted">No purchases yet.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>WhatsApp Bookings</strong></div>
+      <ul class="list-group list-group-flush">
+        {% for o in whatsapp_orders %}
+          <li class="list-group-item d-flex justify-content-between">
+            <a href="{% url 'orders:whatsapp_order_detail' o.pk %}">Order #{{ o.pk }}</a>
+            <span class="badge text-bg-secondary">{{ o.get_status_display }}</span>
+          </li>
+        {% empty %}<li class="list-group-item text-muted">None yet.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
