@@ -33,22 +33,29 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or "django-insecure-&qyex*(l0#h
 DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() in ("1", "true", "yes")
 
 # Comma-separated list in production, e.g. ALLOWED_HOSTS=curex.example.com,www.curex.example.com
+# The Curex Vercel domain is always allowed, while environment variables can add custom domains.
+_default_allowed_hosts = [
+    "localhost",
+    "127.0.0.1",
+    "testserver",
+    "curex-diagnostic-center.vercel.app",
+]
 _allowed_hosts_env = os.environ.get("DJANGO_ALLOWED_HOSTS", "")
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'testserver',
-    'curex-diagnostic-center.vercel.app',
+ALLOWED_HOSTS = _default_allowed_hosts + [
+    h.strip() for h in _allowed_hosts_env.split(",")
+    if h.strip() and h.strip() not in _default_allowed_hosts
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://curex-diagnostic-center.vercel.app',
+# Trust HTTPS origins behind a proxy/load balancer (Vercel, Railway, Render, etc.) and let CSRF work
+# for the Curex Vercel domain. Environment variables can add custom domains.
+_default_csrf_origins = [
+    "https://curex-diagnostic-center.vercel.app",
 ]
-
-# Trust HTTPS origins behind a proxy/load balancer (Railway, Render, etc.) and let CSRF work
-# for your real domain in production.
 _csrf_origins_env = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "")
-CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins_env.split(",") if o.strip()]
+CSRF_TRUSTED_ORIGINS = _default_csrf_origins + [
+    o.strip() for o in _csrf_origins_env.split(",")
+    if o.strip() and o.strip() not in _default_csrf_origins
+]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
