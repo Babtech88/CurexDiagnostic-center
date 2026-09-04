@@ -34,8 +34,15 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() in ("1", "true", "yes")
 
 # Comma-separated list in production, e.g. ALLOWED_HOSTS=curex.example.com,www.curex.example.com
 _allowed_hosts_env = os.environ.get("DJANGO_ALLOWED_HOSTS", "")
-ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts_env.split(",") if h.strip()] or [
-    "localhost", "127.0.0.1", "testserver",
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'testserver',
+    'curex-diagnostic-center.vercel.app',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://curex-diagnostic-center.vercel.app',
 ]
 
 # Trust HTTPS origins behind a proxy/load balancer (Railway, Render, etc.) and let CSRF work
