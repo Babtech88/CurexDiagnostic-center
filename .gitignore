@@ -1,7 +1,18 @@
+# Environment variables
 .env
+
+# SQLite databases and backups
+db.sqlite3
+db.sqlite3.backup
+old_catalog.sqlite3
+*.sqlite3
+*.sqlite3.backup
+
+# Python
 venv/
 __pycache__/
 *.pyc
-db.sqlite3
+*.pyo
+
+# Django generated files
 staticfiles/
-media/
