@@ -16,7 +16,7 @@
 <div class="row g-3">
   <div class="col-md-4">
     <div class="card border-0 shadow-sm p-3">
-      {% if product.image %}<img src="{{ product.image.url }}" class="img-fluid rounded mb-3">{% endif %}
+      {% if product.image %}<img src="{{ product.display_image_url }}" class="img-fluid rounded mb-3">{% endif %}
       <dl class="row mb-0">
         <dt class="col-6">Selling Price</dt><dd class="col-6">₦{{ product.selling_price|intcomma }}</dd>
         <dt class="col-6">Cost Price</dt><dd class="col-6">₦{{ product.cost_price|intcomma }}</dd>

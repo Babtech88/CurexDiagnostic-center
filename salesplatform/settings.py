@@ -117,26 +117,16 @@ WSGI_APPLICATION = 'salesplatform.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-import os
 import dj_database_url
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASES = {
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
 
-if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=0,
-            ssl_require=True,
-        )
-    }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -195,6 +185,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Cloudflare R2, Backblaze B2, or DigitalOcean Spaces — anything S3-API compatible.
 # Leave USE_S3 unset/false to keep using local disk storage (fine for local dev only).
 USE_S3 = os.environ.get("USE_S3", "False").lower() in ("1", "true", "yes")
+# Vercel uses a read-only filesystem. Never fall back to local media storage there.
+if os.environ.get("VERCEL", "").lower() in ("1", "true", "yes"):
+    USE_S3 = True
 
 if USE_S3:
     AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
@@ -205,9 +198,13 @@ if USE_S3:
     AWS_S3_CUSTOM_DOMAIN = os.environ.get("AWS_S3_CUSTOM_DOMAIN")  # optional CDN/custom domain
     AWS_DEFAULT_ACL = None
     AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_ADDRESSING_STYLE = os.environ.get("AWS_S3_ADDRESSING_STYLE", "path")
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
     AWS_QUERYSTRING_AUTH = True  # signed URLs — appropriate since results contain patient data
     AWS_QUERYSTRING_EXPIRE = 3600  # signed link expires in 1 hour
 
+    # django-storages will use this backend for FileField uploads, including
+    # diagnostic result PDFs/images and product media.
     STORAGES["default"] = {"BACKEND": "storages.backends.s3.S3Storage"}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

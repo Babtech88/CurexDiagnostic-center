@@ -59,6 +59,22 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name} ({self.sku})"
 
+    @property
+    def display_image_url(self):
+        """URL for storefront test images.
+
+        The bundled realistic test images are immutable site assets, so they are
+        served from static files on Vercel instead of depending on the writable
+        media filesystem/S3 bucket. Newly uploaded product images still use the
+        configured Django storage backend.
+        """
+        if self.image and self.image.name.startswith("products/real_tests/"):
+            filename = self.image.name.rsplit("/", 1)[-1]
+            return f"{settings.STATIC_URL}img/tests/{filename}"
+        if self.image:
+            return self.image.url
+        return ""
+
     def get_absolute_url(self):
         return reverse("inventory:product_detail", args=[self.pk])
 

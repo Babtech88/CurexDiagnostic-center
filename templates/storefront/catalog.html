@@ -31,7 +31,7 @@
       <div class="card product-card h-100 shadow-sm border-0">
         {% if p.image %}
           <div class="product-image-wrap">
-            <img src="{{ p.image.url }}" class="card-img-top product-test-image" loading="lazy" alt="{{ p.name }} diagnostic test">
+            <img src="{{ p.display_image_url }}" class="card-img-top product-test-image" loading="lazy" alt="{{ p.name }} diagnostic test">
           </div>
         {% endif %}
         <div class="card-body">

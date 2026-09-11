@@ -109,7 +109,7 @@
           <div class="brand-card service-card service-card-photo text-start">
             <div class="service-photo">
               {% if item.product.image %}
-                <img src="{{ item.product.image.url }}" alt="{{ item.label }} diagnostic test" loading="lazy">
+                <img src="{{ item.product.display_image_url }}" alt="{{ item.label }} diagnostic test" loading="lazy">
               {% else %}
                 <div class="service-photo-fallback"><i class="bi {{ item.icon }}"></i></div>
               {% endif %}
