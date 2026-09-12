@@ -69,14 +69,22 @@ DEBUG = os.environ.get(
 # ALLOWED HOSTS
 # =============================================================================
 
+# Always allow the main Curex domain and Vercel preview deployments.
+#
+# ".vercel.app" means any Vercel subdomain, including:
+# curex-diagnostic-center.vercel.app
+# curex-diagnostic-center-d5jub3ue0-babsbooks.vercel.app
+# curex-diagnostic-center-hk4pjgatc-babsbooks.vercel.app
+
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "testserver",
     "curex-diagnostic-center.vercel.app",
+    ".vercel.app",
 ]
 
-# Allow additional hosts supplied through environment variables.
+# Add any additional hosts from Vercel/environment variables.
 extra_allowed_hosts = os.environ.get(
     "DJANGO_ALLOWED_HOSTS",
     "",
@@ -88,29 +96,16 @@ for host in extra_allowed_hosts:
     if host and host not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(host)
 
-
-# Vercel generates preview domains such as:
-# curex-diagnostic-center-hk4pjgatc-babsbooks.vercel.app
-#
-# ".vercel.app" allows those Vercel subdomains.
-if IS_VERCEL and ".vercel.app" not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append(".vercel.app")
-
-
 # =============================================================================
 # CSRF / HTTPS
 # =============================================================================
 
 CSRF_TRUSTED_ORIGINS = [
     "https://curex-diagnostic-center.vercel.app",
+    "https://*.vercel.app",
 ]
 
-# Allow Vercel preview URLs.
-if IS_VERCEL:
-    CSRF_TRUSTED_ORIGINS.append("https://*.vercel.app")
-
-
-# Add custom trusted origins from environment variables.
+# Add additional trusted origins from environment variables.
 extra_csrf_origins = os.environ.get(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
     "",
@@ -123,12 +118,11 @@ for origin in extra_csrf_origins:
         CSRF_TRUSTED_ORIGINS.append(origin)
 
 
-# Vercel sits behind a proxy and forwards the original protocol.
+# Vercel/proxy HTTPS support
 SECURE_PROXY_SSL_HEADER = (
     "HTTP_X_FORWARDED_PROTO",
     "https",
 )
-
 
 # =============================================================================
 # APPLICATION DEFINITION
