@@ -233,26 +233,17 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-
-# ============================================================
+# ---------------------------------------------------------------------------
 # MEDIA FILES
-# ============================================================
-#
-# Local development can use:
-#     media/
-#
-# Production on Vercel MUST use Supabase S3.
-#
-# ============================================================
+# ---------------------------------------------------------------------------
 
 MEDIA_URL = "/media/"
-
 MEDIA_ROOT = BASE_DIR / "media"
 
 
-# ============================================================
+# ---------------------------------------------------------------------------
 # SUPABASE S3 STORAGE
-# ============================================================
+# ---------------------------------------------------------------------------
 
 USE_S3 = os.environ.get(
     "USE_S3",
@@ -260,13 +251,90 @@ USE_S3 = os.environ.get(
 ).lower() in ("1", "true", "yes", "on")
 
 
-# Vercel should ALWAYS use S3.
+# Vercel has a read-only filesystem.
+# Uploaded files MUST use persistent object storage there.
 if os.environ.get(
     "VERCEL",
     "",
 ).lower() in ("1", "true", "yes", "on"):
     USE_S3 = True
 
+
+# ---------------------------------------------------------------------------
+# DJANGO STORAGE CONFIGURATION
+# ---------------------------------------------------------------------------
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": (
+            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            if not DEBUG
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
+        ),
+    },
+}
+
+
+# ---------------------------------------------------------------------------
+# SUPABASE S3
+# ---------------------------------------------------------------------------
+
+if USE_S3:
+
+    AWS_ACCESS_KEY_ID = os.environ.get(
+        "AWS_ACCESS_KEY_ID",
+        "",
+    )
+
+    AWS_SECRET_ACCESS_KEY = os.environ.get(
+        "AWS_SECRET_ACCESS_KEY",
+        "",
+    )
+
+    AWS_STORAGE_BUCKET_NAME = os.environ.get(
+        "AWS_STORAGE_BUCKET_NAME",
+        "curexdiagnostic",
+    )
+
+    AWS_S3_REGION_NAME = os.environ.get(
+        "AWS_S3_REGION_NAME",
+        "eu-central-1",
+    )
+
+    AWS_S3_ENDPOINT_URL = os.environ.get(
+        "AWS_S3_ENDPOINT_URL",
+        "https://elcdmtupofucgjzabuxc.storage.supabase.co/storage/v1/s3",
+    )
+
+    AWS_S3_ADDRESSING_STYLE = os.environ.get(
+        "AWS_S3_ADDRESSING_STYLE",
+        "path",
+    )
+
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
+
+    AWS_DEFAULT_ACL = None
+
+    # Important:
+    # Avoid the HeadObject existence check before uploads.
+    AWS_S3_FILE_OVERWRITE = True
+
+    AWS_QUERYSTRING_AUTH = True
+    AWS_QUERYSTRING_EXPIRE = 3600
+
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+    }
+
+
+else:
+
+    STORAGES["default"] = {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    }
 
 # ============================================================
 # DJANGO STORAGE CONFIGURATION

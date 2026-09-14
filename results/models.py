@@ -1,7 +1,8 @@
 ﻿from django.conf import settings
 from django.db import models
 from django.utils.crypto import get_random_string
-from storages.backends.s3 import S3Storage
+
+from inventory.storage import SupabaseStorage
 
 
 CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
@@ -39,7 +40,7 @@ class TestResult(models.Model):
 
     file = models.FileField(
         upload_to="results/%Y/%m/",
-        storage=S3Storage(),
+        storage=SupabaseStorage(),
         help_text="PDF or image of the result",
     )
 
@@ -106,6 +107,7 @@ class TestResult(models.Model):
             if self.product
             else "Result"
         )
+
         return (
             f"{test_name} — "
             f"{self.customer.name} "
