@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "orders",
     "sales",
     "results",
+    "widget_tweaks",
     "sitecontent",
     "dashboard",
     "whatsapp_bot",
