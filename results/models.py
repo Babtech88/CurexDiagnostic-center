@@ -1,14 +1,17 @@
 ﻿from django.conf import settings
-from django.core.files.storage import default_storage
 from django.db import models
 from django.utils.crypto import get_random_string
+from storages.backends.s3 import S3Storage
 
 
 CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
 
 
 def generate_access_code():
-    return get_random_string(8, allowed_chars=CODE_ALPHABET)
+    return get_random_string(
+        8,
+        allowed_chars=CODE_ALPHABET,
+    )
 
 
 class TestResult(models.Model):
@@ -36,14 +39,17 @@ class TestResult(models.Model):
 
     file = models.FileField(
         upload_to="results/%Y/%m/",
-        storage=default_storage,
+        storage=S3Storage(),
         help_text="PDF or image of the result",
     )
 
     result_summary = models.CharField(
         max_length=200,
         blank=True,
-        help_text="Optional short note, e.g. 'Normal' or 'See attached report'",
+        help_text=(
+            "Optional short note, e.g. "
+            "'Normal' or 'See attached report'"
+        ),
     )
 
     access_code = models.CharField(
@@ -55,13 +61,18 @@ class TestResult(models.Model):
 
     is_released = models.BooleanField(
         default=True,
-        help_text="Uncheck to hide this result from the patient portal without deleting it",
+        help_text=(
+            "Uncheck to hide this result from the patient portal "
+            "without deleting it"
+        ),
     )
 
     test_date = models.DateField(
         null=True,
         blank=True,
-        help_text="Date the sample was collected / test performed",
+        help_text=(
+            "Date the sample was collected / test performed"
+        ),
     )
 
     notes = models.TextField(
@@ -77,7 +88,9 @@ class TestResult(models.Model):
         related_name="+",
     )
 
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    uploaded_at = models.DateTimeField(
+        auto_now_add=True,
+    )
 
     patient_notified_at = models.DateTimeField(
         null=True,
@@ -88,9 +101,19 @@ class TestResult(models.Model):
         ordering = ["-uploaded_at"]
 
     def __str__(self):
-        test_name = self.product.name if self.product else "Result"
-        return f"{test_name} — {self.customer.name} ({self.access_code})"
+        test_name = (
+            self.product.name
+            if self.product
+            else "Result"
+        )
+        return (
+            f"{test_name} — "
+            f"{self.customer.name} "
+            f"({self.access_code})"
+        )
 
     def regenerate_access_code(self):
         self.access_code = generate_access_code()
-        self.save(update_fields=["access_code"])
+        self.save(
+            update_fields=["access_code"]
+        )
