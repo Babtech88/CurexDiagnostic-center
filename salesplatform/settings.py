@@ -269,150 +269,54 @@ USE_TZ = True
 
 
 # =============================================================================
-# STATIC FILES
+# ALLOWED HOSTS
 # =============================================================================
 
-STATIC_URL = "/static/"
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "testserver",
+    "curex-diagnostic-center.vercel.app",
+    ".vercel.app",
 ]
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
+extra_allowed_hosts = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    "",
+).split(",")
+
+for host in extra_allowed_hosts:
+    host = host.strip()
+
+    if host and host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(host)
 
 
 # =============================================================================
-# MEDIA FILES / STORAGE
-# =============================================================================
-#
-# IMPORTANT:
-#
-# Vercel's filesystem is READ-ONLY.
-#
-# Therefore:
-#
-# Local development:
-#     USE_S3=False
-#     -> files use local media/
-#
-# Vercel:
-#     USE_S3=True
-#     -> files use Supabase S3 Storage
-#
-# This includes:
-# - patient result uploads
-# - product images
-# - any other Django FileField/ImageField uploads
+# CSRF / HTTPS
 # =============================================================================
 
-MEDIA_URL = "/media/"
+CSRF_TRUSTED_ORIGINS = [
+    "https://curex-diagnostic-center.vercel.app",
+    "https://*.vercel.app",
+]
 
-MEDIA_ROOT = BASE_DIR / "media"
+extra_csrf_origins = os.environ.get(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    "",
+).split(",")
+
+for origin in extra_csrf_origins:
+    origin = origin.strip()
+
+    if origin and origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(origin)
 
 
-# Read USE_S3 from environment.
-USE_S3 = os.environ.get(
-    "USE_S3",
-    "False",
-).lower() in (
-    "1",
-    "true",
-    "yes",
-    "on",
+SECURE_PROXY_SSL_HEADER = (
+    "HTTP_X_FORWARDED_PROTO",
+    "https",
 )
-
-
-# Vercel MUST always use S3/object storage.
-if IS_VERCEL:
-    USE_S3 = True
-
-
-# =============================================================================
-# DJANGO STORAGE BACKENDS
-# =============================================================================
-
-STORAGES = {
-    # Default local storage.
-    #
-    # This gets replaced with S3Storage when USE_S3=True.
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-
-    # Static files.
-    "staticfiles": {
-        "BACKEND": (
-            "whitenoise.storage.CompressedManifestStaticFilesStorage"
-            if not DEBUG
-            else
-            "django.contrib.staticfiles.storage.StaticFilesStorage"
-        ),
-    },
-}
-
-
-# =============================================================================
-# SUPABASE S3 STORAGE
-# =============================================================================
-
-if USE_S3:
-
-    # -------------------------------------------------------------------------
-    # Supabase S3 credentials
-    # -------------------------------------------------------------------------
-    #
-    # NEVER put the actual credentials here.
-    #
-    # These are ENVIRONMENT VARIABLE NAMES.
-    #
-    AWS_ACCESS_KEY_ID = os.environ.get(
-        "AWS_ACCESS_KEY_ID",
-        "",
-    )
-
-    AWS_SECRET_ACCESS_KEY = os.environ.get(
-        "AWS_SECRET_ACCESS_KEY",
-        "",
-    )
-
-    AWS_STORAGE_BUCKET_NAME = os.environ.get(
-        "AWS_STORAGE_BUCKET_NAME",
-        "curexdiagnostic",
-    )
-
-    AWS_S3_REGION_NAME = os.environ.get(
-        "AWS_S3_REGION_NAME",
-        "eu-central-1",
-    )
-
-    AWS_S3_ENDPOINT_URL = os.environ.get(
-        "AWS_S3_ENDPOINT_URL",
-        "https://elcdmtupofucgjzabuxc.storage.supabase.co/storage/v1/s3",
-    )
-
-    AWS_S3_ADDRESSING_STYLE = os.environ.get(
-        "AWS_S3_ADDRESSING_STYLE",
-        "path",
-    )
-
-    AWS_S3_SIGNATURE_VERSION = "s3v4"
-
-    # Do not use legacy ACLs.
-    AWS_DEFAULT_ACL = None
-
-    # Prevent accidental overwriting of files with the same name.
-    AWS_S3_FILE_OVERWRITE = False
-
-    # Generate signed URLs for private objects.
-    AWS_QUERYSTRING_AUTH = True
-
-    # Signed URL lifetime: 1 hour.
-    AWS_QUERYSTRING_EXPIRE = 3600
-
-    # Use django-storages S3 backend.
-    STORAGES["default"] = {
-        "BACKEND": "storages.backends.s3.S3Storage",
-    }
 
 
 # =============================================================================
