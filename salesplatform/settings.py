@@ -60,26 +60,24 @@ for host in extra_allowed_hosts:
 # ============================================================
 # APPLICATIONS#
 INSTALLED_APPS = [
-    # Django
+    # Django apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
 
-    # Third-party
-    "storages",
-
-    # Project apps
+    # Curex project apps
     "accounts",
     "customers",
-    "dashboard",
     "inventory",
     "orders",
-    "results",
     "sales",
+    "results",
     "sitecontent",
+    "dashboard",
     "whatsapp_bot",
 ]
 
