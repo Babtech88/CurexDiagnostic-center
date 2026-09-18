@@ -1,3 +1,5 @@
+#python
+
 from pathlib import Path
 import os
 
@@ -34,6 +36,31 @@ DEBUG = os.environ.get(
 
 
 # ============================================================
+# SITE CONFIGURATION
+# ============================================================
+#
+# Used by result notification messages and other public links.
+#
+# Local:
+#   SITE_BASE_URL=http://127.0.0.1:8000
+#
+# Production:
+#   SITE_BASE_URL=https://curex-diagnostic-center.vercel.app
+#
+# ============================================================
+
+SITE_NAME = os.environ.get(
+    "SITE_NAME",
+    "Curex Diagnostic Centre",
+).strip()
+
+SITE_BASE_URL = os.environ.get(
+    "SITE_BASE_URL",
+    "https://curex-diagnostic-center.vercel.app",
+).strip().rstrip("/")
+
+
+# ============================================================
 # ALLOWED HOSTS
 # ============================================================
 
@@ -58,7 +85,9 @@ for host in extra_allowed_hosts:
 
 
 # ============================================================
-# APPLICATIONS#
+# APPLICATIONS
+# ============================================================
+
 INSTALLED_APPS = [
     # Django apps
     "django.contrib.admin",
@@ -69,6 +98,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
 
+    # Third-party apps
+    "widget_tweaks",
+
     # Curex project apps
     "accounts",
     "customers",
@@ -76,12 +108,10 @@ INSTALLED_APPS = [
     "orders",
     "sales",
     "results",
-    "widget_tweaks",
     "sitecontent",
     "dashboard",
     "whatsapp_bot",
 ]
-
 
 
 # ============================================================
@@ -138,15 +168,18 @@ TEMPLATES = [
 # DATABASE
 # ============================================================
 #
-# Vercel / production:
-#   DATABASE_URL should contain your Supabase PostgreSQL URL.
+# Production / Vercel:
+#   DATABASE_URL should contain the Supabase PostgreSQL URL.
 #
 # Local:
 #   If DATABASE_URL is not available, SQLite is used.
 #
 # ============================================================
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "",
+).strip()
 
 if DATABASE_URL:
     import dj_database_url
@@ -156,28 +189,17 @@ if DATABASE_URL:
             DATABASE_URL,
             conn_max_age=600,
             ssl_require=True,
-        )
+        ),
     }
+
 else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
-        }
+        },
     }
 
-#Site base url#
-SITE_BASE_URL = os.environ.get(
-    "SITE_BASE_URL",
-    "https://curex-diagnostic-center.vercel.app"
-)
-
-#Site name#
-SITE_NAME = os.getenv("SITE_NAME", "Curex Diagnostic Centre")
-SITE_BASE_URL = os.getenv(
-    "SITE_BASE_URL",
-    "http://127.0.0.1:8000"
-)
 
 # ============================================================
 # PASSWORD VALIDATION
@@ -227,15 +249,6 @@ USE_TZ = True
 # ============================================================
 # STATIC FILES
 # ============================================================
-#
-# IMPORTANT:
-# STATIC_URL MUST be defined.
-#
-# Django templates use:
-# {% load static %}
-# {% static "..." %}
-#
-# ============================================================
 
 STATIC_URL = "/static/"
 
@@ -245,17 +258,19 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# ---------------------------------------------------------------------------
+
+# ============================================================
 # MEDIA FILES
-# ---------------------------------------------------------------------------
+# ============================================================
 
 MEDIA_URL = "/media/"
+
 MEDIA_ROOT = BASE_DIR / "media"
 
 
-# ---------------------------------------------------------------------------
-# SUPABASE S3 STORAGE
-# ---------------------------------------------------------------------------
+# ============================================================
+# SUPABASE S3 / OBJECT STORAGE
+# ============================================================
 
 USE_S3 = os.environ.get(
     "USE_S3",
@@ -264,7 +279,7 @@ USE_S3 = os.environ.get(
 
 
 # Vercel has a read-only filesystem.
-# Uploaded files MUST use persistent object storage there.
+# Uploaded files must therefore use persistent object storage.
 if os.environ.get(
     "VERCEL",
     "",
@@ -272,14 +287,19 @@ if os.environ.get(
     USE_S3 = True
 
 
-# ---------------------------------------------------------------------------
+# ============================================================
 # DJANGO STORAGE CONFIGURATION
-# ---------------------------------------------------------------------------
+# ============================================================
 
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": (
+            "storages.backends.s3.S3Storage"
+            if USE_S3
+            else "django.core.files.storage.FileSystemStorage"
+        ),
     },
+
     "staticfiles": {
         "BACKEND": (
             "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -290,9 +310,9 @@ STORAGES = {
 }
 
 
-# ---------------------------------------------------------------------------
-# SUPABASE S3
-# ---------------------------------------------------------------------------
+# ============================================================
+# SUPABASE S3 SETTINGS
+# ============================================================
 
 if USE_S3:
 
@@ -330,93 +350,13 @@ if USE_S3:
 
     AWS_DEFAULT_ACL = None
 
-    # Important:
-    # Avoid the HeadObject existence check before uploads.
+    # Uploaded files may replace files with the same name.
     AWS_S3_FILE_OVERWRITE = True
 
-    AWS_QUERYSTRING_AUTH = True
-    AWS_QUERYSTRING_EXPIRE = 3600
-
-    STORAGES["default"] = {
-        "BACKEND": "storages.backends.s3.S3Storage",
-    }
-
-
-else:
-
-    STORAGES["default"] = {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    }
-
-# ============================================================
-# DJANGO STORAGE CONFIGURATION
-# ============================================================
-
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-
-    "staticfiles": {
-        "BACKEND": (
-            "whitenoise.storage.CompressedManifestStaticFilesStorage"
-            if not DEBUG
-            else "django.contrib.staticfiles.storage.StaticFilesStorage"
-        ),
-    },
-}
-
-
-# ============================================================
-# SUPABASE S3
-# ============================================================
-
-if USE_S3:
-
-    AWS_ACCESS_KEY_ID = os.environ.get(
-        "AWS_ACCESS_KEY_ID",
-        "",
-    )
-
-    AWS_SECRET_ACCESS_KEY = os.environ.get(
-        "AWS_SECRET_ACCESS_KEY",
-        "",
-    )
-
-    AWS_STORAGE_BUCKET_NAME = os.environ.get(
-        "AWS_STORAGE_BUCKET_NAME",
-        "curexdiagnostic",
-    )
-
-    AWS_S3_REGION_NAME = os.environ.get(
-        "AWS_S3_REGION_NAME",
-        "eu-central-1",
-    )
-
-    AWS_S3_ENDPOINT_URL = os.environ.get(
-        "AWS_S3_ENDPOINT_URL",
-        "https://elcdmtupofucgjzabuxc.storage.supabase.co/storage/v1/s3",
-    )
-
-    AWS_S3_ADDRESSING_STYLE = os.environ.get(
-        "AWS_S3_ADDRESSING_STYLE",
-        "path",
-    )
-
-    AWS_S3_SIGNATURE_VERSION = "s3v4"
-
-    AWS_DEFAULT_ACL = None
-
-    AWS_S3_FILE_OVERWRITE = False
-
+    # Generate signed URLs for private objects.
     AWS_QUERYSTRING_AUTH = True
 
     AWS_QUERYSTRING_EXPIRE = 3600
-
-    # All uploaded media files go to Supabase S3.
-    STORAGES["default"] = {
-        "BACKEND": "storages.backends.s3.S3Storage",
-    }
 
 
 # ============================================================
@@ -445,7 +385,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://curex-diagnostic-center.vercel.app",
     "https://*.vercel.app",
 ]
-
 
 extra_csrf_origins = os.environ.get(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
@@ -583,6 +522,7 @@ WHATSAPP_VERIFY_TOKEN = os.environ.get(
 
 LOGGING = {
     "version": 1,
+
     "disable_existing_loggers": False,
 
     "handlers": {
