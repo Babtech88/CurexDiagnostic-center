@@ -166,6 +166,11 @@ else:
         }
     }
 
+#Site base url#
+SITE_BASE_URL = os.environ.get(
+    "SITE_BASE_URL",
+    "https://curex-diagnostic-center.vercel.app"
+)
 
 # ============================================================
 # PASSWORD VALIDATION
