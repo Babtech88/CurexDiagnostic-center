@@ -68,6 +68,20 @@ class Product(models.Model):
         media filesystem/S3 bucket. Newly uploaded product images still use the
         configured Django storage backend.
         """
+        # The 87 official catalog test images are bundled with the application
+        # under static/img/tests/. Use the SKU (001-087) as the stable mapping so
+        # images show even when the database was imported from an older SQLite copy
+        # whose ImageField points at category images or has no image value.
+        import re
+        sku_match = re.match(r"^(\d{3})", str(self.sku or ""))
+        if sku_match:
+            prefix = sku_match.group(1)
+            from pathlib import Path
+            test_dir = Path(settings.BASE_DIR) / "static" / "img" / "tests"
+            matches = sorted(test_dir.glob(prefix + "-*.jpg"))
+            if matches:
+                return f"{settings.STATIC_URL}img/tests/{matches[0].name}"
+
         if self.image and self.image.name.startswith("products/real_tests/"):
             filename = self.image.name.rsplit("/", 1)[-1]
             return f"{settings.STATIC_URL}img/tests/{filename}"
