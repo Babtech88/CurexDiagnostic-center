@@ -39,6 +39,8 @@ _default_allowed_hosts = [
     "127.0.0.1",
     "testserver",
     "curex-diagnostic-center.vercel.app",
+    "curexdiagnostics.com",
+    "www.curexdiagnostics.com",
 ]
 _allowed_hosts_env = os.environ.get("DJANGO_ALLOWED_HOSTS", "")
 ALLOWED_HOSTS = _default_allowed_hosts + [
